@@ -1,0 +1,2 @@
+# playdate-yuescript-template
+
