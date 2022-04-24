@@ -1,0 +1,45 @@
+--- Simple hueristics to speed up the solver removing impossible boards
+--- Doesn't determine if a board is solvable, just quick checks to see if it's impossible
+-- @param board A string representation of a game board
+-- @return solveable Bool
+-- @return reason String Reason for failing
+global quick_solveable = (board) ->
+
+  -- Remove whitespace
+  board, length, size = common(board)
+
+  -- Size must be a whole number and multiple of 2
+  if size % 1 != 0
+    return false, NON_SQUARE
+
+  if size % 2 != 0
+    return false, "boards must have even dimensions"
+
+  -- If all tiles are blank
+  if count(board, TILE_STATES.none) == length
+    return false, "all blank"
+
+  if count(board, TILE_STATES.on) > length/2
+    return false, "more than half on"
+
+  if count(board, TILE_STATES.off) > length/2
+    return false, "more than half off"
+
+  rows = {}
+
+  -- Loop over rows, applying each rule
+  for row_index = 1, size
+
+    row = get_row(board, row_index)
+    if not no_threes_rule(row)
+      return false, "three in a row"
+
+  for column_index = 1, size
+
+    column = get_column(board, column_index)
+    if not no_threes_rule(column)
+      return false, "three in a row"
+
+  return true
+
+return {:quick_solveable}

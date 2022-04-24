@@ -1,0 +1,24 @@
+-- Various utilities used over the place
+
+-- https://stackoverflow.com/a/5265330/8456445
+global replace_char = (str, pos, r) ->
+  return string.sub(str, 1, pos-1) .. r .. string.sub(str, pos+1)
+
+-- Returns an integer
+global count = (str, c) ->
+  _, n = string.gsub(str, c, "")
+  return n
+
+global reverse_lookup = (char, table) ->
+
+  for k, v in pairs(table)
+    if v == char
+      return k
+
+global common = (board) ->
+  board = string.gsub(board, "%s+", "")
+  length = string.len(board)
+  size = math.sqrt(length)
+  return board, length, size
+
+return {:replace_char, :count, :reverse_lookup, :common}

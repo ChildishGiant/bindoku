@@ -1,0 +1,16 @@
+
+needs_unique_rule = "
+  --1-
+  ---0
+  0---
+  11--
+"
+
+solved_2x2 = "0110"
+
+needs_equal_count = "
+0011
+11--
+"
+
+{:needs_unique_rule, :solved_2x2, :needs_equal_count}

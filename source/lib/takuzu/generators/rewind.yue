@@ -1,0 +1,61 @@
+-- place a random tile in a random spot
+-- if it breaks a rule, undo it and place a new one
+
+--- Generates a board
+-- @param handicap int number of additional number TODO
+-- @param size Int side dimension
+-- @return board A string representation of a game board
+-- @return string error
+generate_rewind = (size=4) ->
+  seed = playdate.getSecondsSinceEpoch()
+  math.randomseed(seed)
+
+  timeout = playdate.getSecondsSinceEpoch() + MAX_TIME
+  count = 0
+  MAX_FILLS = size*size
+
+  if size % 2 != 0
+    return false, "boards must have even dimensions"
+
+
+  while true
+
+    count += 1
+
+    -- Make a blank board of the correct size
+    board = string.rep(TILE_STATES.none, size*size)
+
+    for i = 1, MAX_FILLS
+
+      saved = board
+
+      while true
+        -- Choose a random x and y
+        random_x = math.random(size)
+        random_y = math.random(size)
+
+        -- Place either a on or off there
+        if math.random() > 0.5
+          board = set_x_y(board, random_x, random_y, TILE_STATES.on)
+        else
+          board = set_x_y(board, random_x, random_y, TILE_STATES.off)
+
+        -- Check if new placement made it impossible
+        if not quick_solveable(board)
+        -- If so, rewind
+          board = saved
+        -- Otherwise
+        else
+          -- Check if the generated board is solveable
+          if solve(board)
+            -- If it is, return finished board
+            return format_grid(board), i
+          -- If not, back to the top of the loop to add another tile
+
+    -- Check that we've not gone over the maximum amount of attempts
+    if count > MAX_ATTEMPTS
+      return "Over max attempts, try changing input settings", count
+    elseif playdate.getSecondsSinceEpoch() > timeout
+      return "Over max time, try changing input settings", count
+
+return {:generate_rewind}

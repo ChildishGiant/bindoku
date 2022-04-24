@@ -1,0 +1,57 @@
+-- Returns an offset
+get_x_y = (index, size) =>
+
+  if index > size
+    return index - size, 0
+
+  return 0, size
+
+-- returns a range of tiles and a hint
+get_hint = (board) ->
+
+  board, length, size = common(board)
+
+  -- Check if the board is solved
+  if check_solved(board)
+    return {}, "Already solved"
+
+  row_cols = get_rows_cols(board)
+
+  -- Loop over rows, applying each rule
+  for row_col_index = 1, size*2
+
+    row_col = row_cols[row_col_index]
+
+    to_replace = {
+      "00%-": 3
+      "%-00": 1
+      "0%-0": 2
+      "11%-": 3
+      "%-11": 1
+      "1%-1": 2
+    }
+
+    for rule, offset in pairs(to_replace)
+      print(row_col)
+      index = string.find(row_col, rule)
+      if index != nil
+        x_offset, y_offset = get_x_y(row_col_index, size)
+
+        -- If it's a row
+        if y_offset > 0
+          print( "row")
+        -- If it's a column
+        if x_offset > 0
+          print( "col")
+        -- return {{}}, "Placing this tile would create 3 in a row"
+        -- print( "This line" .. row_index .. index)
+
+
+
+  -- Now do the same to columns
+  for column_index = 1, size
+
+    column = get_column(board, column_index)
+
+return {:get_hint}
+

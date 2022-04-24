@@ -1,0 +1,7 @@
+import get_row from require "board"
+
+first_row_filled_2 = "1100"
+first_row_filled_4 = "1111000000000000"
+
+
+assert

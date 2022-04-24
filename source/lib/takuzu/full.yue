@@ -1,0 +1,19 @@
+solver = require "solver"
+board = require "board"
+check = require "check"
+quick_solveable = require "quick_solveable"
+settings = require "settings"
+util = require "util"
+rewind = require "generators/rewind"
+
+lib = {}
+
+for k, v in pairs(solver)          do lib[k] = v
+for k, v in pairs(board)           do lib[k] = v
+for k, v in pairs(check)           do lib[k] = v
+for k, v in pairs(quick_solveable) do lib[k] = v
+for k, v in pairs(settings)        do lib[k] = v
+for k, v in pairs(util)            do lib[k] = v
+for k, v in pairs(rewind)          do lib[k] = v
+
+return lib

@@ -1,0 +1,99 @@
+
+-- Takes a single row and applies the equals rule
+equal_count_RULE = (str) ->
+  -- Each row and each column must contain an equal number of 0s and 1s
+  on_count = count(str, TILE_STATES.on)
+  off_count = count(str, TILE_STATES.off)
+  half_size = string.len(str) / 2
+
+  -- If half are on
+  if on_count == half_size
+    -- Make all blanks off
+    return string.gsub(str, TILE_STATES.none, TILE_STATES.off)
+
+  -- If half are off
+  if off_count == half_size
+    -- Make all blanks on
+    return string.gsub(str, TILE_STATES.none, TILE_STATES.on)
+
+  return str
+
+three_adjacent_RULE = (str) ->
+  -- More than two of the same digits can't be adjacent
+
+  -- TODO: Stop hardcoding stuff
+  to_replace = {
+    "00%-": "001"
+    "%-00": "100"
+    "0%-0": "010"
+
+    "11%-": "110"
+    "%-11": "011"
+    "1%-1": "101"
+  }
+
+  for rule in pairs(to_replace)
+    str = string.gsub(str, rule, to_replace[rule] )
+
+  return str
+
+-- impossible_RULE = (str) ->
+  -- Eliminate the impossible. For example, if the sixth cell in 110xxx is made a 1,
+  -- balancing the number of 0s and 1s forces a trio to appear
+
+  -- equal_count
+
+  -- Each row and column is unique
+  -- 'unique
+
+-- Returns a bool for solveable, a board and a reason
+global solve = (board, no_quick_test) ->
+
+  -- Remove whitespace
+  board, length, size = common(board)
+
+  if not no_quick_test
+    -- If fails some basic checks for being solveable
+    solveable, reason = quick_solveable(board)
+    if not solveable
+      return false, board, reason
+
+
+
+  while check_solved(board) != true
+
+    previous = board
+
+    rows = {}
+
+    -- Loop over rows, applying each rule
+    for row_index = 1, size
+
+      row = get_row(board, row_index)
+      out = equal_count_RULE(row)
+      out = three_adjacent_RULE(out)
+
+      table.insert(rows, out)
+
+    -- Now do the same to columns
+    board = table.concat(rows, "\n")
+
+    for column_index = 1, size
+
+      column = get_column(board, column_index)
+      out = equal_count_RULE(column)
+      out = three_adjacent_RULE(out)
+
+      board = set_column(board, column_index, out)
+
+
+    -- If after going through all the rules nothing has changed
+    if board == previous
+      -- Not solveable, return false and current progress
+      return false, board, "dead end"
+
+  -- Solved, return true and finished board
+  return true, board
+
+
+return {:equal_count, :equal_count_RULE, :solve, :three_adjacent_RULE}

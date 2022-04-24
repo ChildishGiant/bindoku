@@ -1,0 +1,39 @@
+-- takuzu = require ("full")
+-- pprint = require("pprint")
+
+
+cursor = (board, x, y) ->
+  -- pprint(board, x, y)
+
+  board, length, size = takuzu.common(board)
+  position = ((y-1)*size)+x
+
+  start_chunk = string.sub(board, 1, position-1)
+  value = string.sub(board, position, position)
+  print()
+  end_chunk = string.sub(board, position+1)
+
+  --                          light green          reset
+  new_board = start_chunk .. "\027[102m" .. value .. "\027[0m" .. end_chunk
+
+  return new_board
+
+
+size = 0
+
+while true
+  io.write("Choose a board size:")
+  size = io.read("*n")
+
+  if size < 2
+    print("Size must be at least 2")
+  else if size % 2 != 0
+    print("Size must be even")
+  else
+    break
+
+
+board = takuzu.generate_rewind(size)
+
+print(cursor(takuzu.board_string_to_arrays(board),1,2))
+

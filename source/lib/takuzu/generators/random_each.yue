@@ -1,0 +1,43 @@
+
+
+export generate_random_each
+
+-- Difficulty is a float between 0 and 1 (1 being empty and 0 being solved)
+generate_random_each = (difficulty, size) ->
+	seed = playdate.getSecondsSinceEpoch()
+	math.randomseed(seed)
+	count = 0
+
+	timeout = playdate.getSecondsSinceEpoch() + MAX_TIME
+
+	while true
+
+		count += 1
+
+		board = ""
+
+		for i = 1, size*size -- might need a +1
+
+			-- Decide to fill or not
+			if math.random() <= difficulty
+
+				-- 50% of the time
+				if math.random() > 0.5
+					board = board..TILE_STATES.on
+				else
+					board = board..TILE_STATES.off
+
+			-- Don't fill
+			else
+				board = board..TILE_STATES.none
+
+
+		-- Check if the generated board is solveable
+		if solve(board)
+			-- Return finished board
+			return format_grid(board), count
+		-- Check that we've not gone over the maximum amount of attempts
+		elseif count > MAX_ATTEMPTS
+			return "Over max attempts, try changing input settings", count
+		elseif playdate.getSecondsSinceEpoch() > timeout
+			return "Over max time, try changing input settings", count

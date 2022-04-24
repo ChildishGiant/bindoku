@@ -1,0 +1,75 @@
+global no_threes_rule = (str) ->
+	-- TODO: Stop hardcoding stuff
+	if count(str, "000") > 0
+		return false
+
+	if count(str, "111") > 0
+		return false
+
+	return true
+no_none_rule = (str) ->
+
+	if count(str, TILE_STATES.none) > 0
+		return false
+
+	return true
+equal_rule = (str) ->
+
+	on_count = count(str, TILE_STATES.on)
+	off_count = count(str, TILE_STATES.off)
+
+	if on_count != off_count
+		return false
+
+	return true
+
+-- Return false for fail
+checks = {
+	no_threes_rule,
+	no_none_rule,
+	equal_rule
+}
+
+global check_solved = (board) ->
+
+	board, length, size = common(board)
+
+	on_count = count(board, TILE_STATES.on)
+	off_count = count(board, TILE_STATES.off)
+	none_count = count(board, TILE_STATES.none)
+
+	-- Basic checks for now
+
+	-- Should be an equal number of ons and offs
+	if on_count != off_count
+		return false
+
+	-- Should be no unsolved tiles
+	if none_count > 0
+		return false
+
+	-- For row
+	for row_index = 1, size
+
+		row = get_row(board, row_index)
+
+		for i in pairs(checks)
+			rule = checks[i]
+			if rule(row) == false
+
+				return false
+
+	-- For column
+	for column_index = 1, size
+
+		column = get_column(board, column_index)
+
+		for i in pairs(checks)
+			rule = checks[i]
+			if rule(column) == false
+				return false
+
+	return true
+
+
+return {:check_solved, :checks, :no_threes_rule}

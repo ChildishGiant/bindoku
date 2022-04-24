@@ -1,0 +1,65 @@
+
+images = playdate.graphics.imagetable.new(3)
+
+width = 2
+gap = 3
+size = 56
+
+gfx.setLineWidth(width)
+
+sizes = {
+	"4": {
+		x_offset = 83,
+		y_offset = 0,
+		size = 56,
+		gap = 3,
+	}
+}
+
+
+none_image = gfx.image.new(size+width+1, size+width+1)
+gfx.pushContext(none_image)
+gfx.drawRoundRect(width, width, size, size, 10)
+gfx.popContext()
+
+
+half_image = gfx.image.new(size+width+1, size+width+1)
+gfx.pushContext(half_image)
+gfx.drawRoundRect(width, width, size, size, 10)
+gfx.setPattern({0x77, 0x77, 0xDD, 0xDD, 0x77, 0x77, 0xDD, 0xDD})
+gfx.fillRoundRect(5, 5, 50, 50, 6)
+gfx.popContext()
+gfx.setColor(0) -- Reset colour
+
+
+
+full_image = gfx.image.new(size+width+1, size+width+1)
+gfx.pushContext(full_image)
+gfx.drawRoundRect(width, width, size, size, 10)
+gfx.fillRoundRect(5, 5, 50, 50, 6)
+gfx.popContext()
+-- images\setImage(3, full_image)
+
+
+
+class Tile
+
+	sprite = nil
+
+
+	new: =>
+		@sprite = gfx.sprite.new(half_image)
+		-- @sprite\moveTo(1, 10)
+		@sprite\setCenter(0, 0)
+		@sprite\add!
+
+	set_state: (state) =>
+		if state == "-"
+			@sprite\setImage(none_image)
+		elseif state == "0"
+			@sprite\setImage(half_image)
+		elseif state == "1"
+			@sprite\setImage(full_image)
+
+
+return Tile

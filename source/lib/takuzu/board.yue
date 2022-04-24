@@ -1,0 +1,160 @@
+
+global get_row = (board, num) ->
+
+  board, length, size = common(board)
+
+  if num < 1 or num > size
+    error X_Y_OUT_OF_RANGE
+    return false
+
+  if size % 2 != 0
+    debug.traceback("size must be even")
+    print board
+    return false
+
+  start = (num*size) - (size-1)
+  stringend = start + size - 1
+  -- print num, size, start, stringend
+  return string.sub(board, start, stringend)
+
+global get_column = (board, num) ->
+
+  board, length, size = common(board)
+
+  toReturn = ""
+
+  for col = 1, size
+    location = ((col-1)*size) + num
+    toReturn = toReturn..string.sub(board, location, location)
+  return toReturn
+
+global format_grid = (board) ->
+
+  board, length, size = common(board)
+
+  rows = {}
+
+  for row = 1, size
+    table.insert(rows, get_row(board, row))
+
+  return table.concat(rows, "\n")
+
+global set_row = (board, num, value) ->
+
+  board, length, size = common(board)
+
+  pos = ((num-1)*size)+1
+
+  new_board = string.sub(board, 1, pos-1) .. value .. string.sub(board, pos+size)
+  return format_grid(new_board)
+
+global set_column = (board, num, value) ->
+
+  board, length, size = common(board)
+
+  toReturn = ""
+
+  for col = 1, size
+    c = string.sub(value, col, col)
+
+    location = ((col-1)*size) + num
+    board = replace_char(board, location, c)
+
+  return format_grid(board)
+
+global set_x_y = (board, x, y, value) ->
+
+  board, length, size = common(board)
+
+  position = ((y-1)*size)+x
+
+  start_chunk = string.sub(board, 1, position-1)
+  end_chunk = string.sub(board, position+1)
+
+  new_board = start_chunk .. value .. end_chunk
+
+  return new_board
+
+get_x_y = (board, x, y) ->
+
+  board, length, size = common(board)
+
+  -- Make sure the x and y are't out of range
+  if x == 0 or y == 0
+    error X_Y_0
+    return false
+
+  if x > size or y > size
+    error X_Y_OUT_OF_RANGE
+    return false
+
+  position = ((y-1)*size)+x
+  out = string.sub(board, position, position)
+
+  return out
+
+-- Returns an array with rows then columns in (doubles)
+global get_rows_cols = (board) ->
+
+  board, length, size = common(board)
+
+  to_return = {}
+
+  -- Loop over rows
+  for row_index = 1, size
+
+    row = get_row(board, row_index)
+    table.insert(to_return, row)
+
+  for column_index = 1, size
+
+    column = get_column(board, column_index)
+    table.insert(to_return, column)
+
+  return to_return
+
+cycle_x_y = (board, x, y) ->
+
+  -- Get current value
+  current = get_x_y(board, x, y)
+  lookup = reverse_lookup(current, TILE_STATES)
+  index = ORDER_LOOKUP[lookup]
+
+  index += 1
+
+  index = 1 if index > 3
+
+  replace = TILE_STATES[CYCLE_ORDER[tostring(index)]]
+
+  return set_x_y(board, x, y, replace)
+
+
+global board_string_to_arrays = (board) ->
+
+  board, length, size = common(board)
+
+  rows = {}
+
+  for row = 1, size
+    row_text = get_row(board, row)
+    row_array = {}
+    for index = 1, string.len(row_text)
+      table.insert(row_array, string.sub(row_text, index, index))
+    table.insert(rows, row_array)
+
+  return rows
+
+
+
+return {
+  :get_row,
+  :get_column,
+  :set_row,
+  :set_column,
+  :set_x_y,
+  :format_grid,
+  :get_rows_cols,
+  :get_x_y,
+  :cycle_x_y,
+  :board_string_to_arrays
+}

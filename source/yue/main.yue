@@ -1,8 +1,26 @@
 -- Copyright 2022 YourName <YourEmail>
 -- SPDX-License-Identifier: GPL-3.0-or-later
 
-gfx = playdate.graphics
+global gfx = playdate.graphics
+global takuzu = require("lib/takuzu/full")
+Tile = require("tile")
+
+playdate.display.setInverted(true)
+
+
+
+puzzle = takuzu.generate_rewind(4,4)
+print puzzle
+row_cols = board_string_to_arrays(puzzle)
+
+
+for row = 1, #row_cols
+  for col = 1, #row_cols[row]
+
+    new_tile = Tile!
+    new_tile\set_state(row_cols[row][col])
+    new_tile.sprite\moveTo(83 + (row-1)*56 + ((row-1)* 4), (col-1)*56 + ((col-1)* 4))
 
 playdate.update = () ->
-  --
+  gfx.sprite.update!
 

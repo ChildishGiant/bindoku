@@ -1,0 +1,6 @@
+
+global X_Y_0 = "X and Y positions are 1-indexed"
+global X_Y_OUT_OF_RANGE = "X and Y positions supplied are invalid"
+global NON_SQUARE = "Boards must be square"
+
+-- {:X_Y_0, :X_Y_OUT_OF_RANGE, :NON_SQUARE}

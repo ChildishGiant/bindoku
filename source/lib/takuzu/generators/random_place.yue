@@ -1,0 +1,43 @@
+
+export generate_random_place
+
+-- difficulty is a float between 0 and 1
+-- returns a board array and how many attempts it took to generate
+generate_random_place = (difficulty, size) ->
+	seed = playdate.getSecondsSinceEpoch()
+	math.randomseed(seed)
+
+	timeout = playdate.getSecondsSinceEpoch() + MAX_TIME
+	count = 0
+	MAX_FILLS = size*size*difficulty
+
+	while true
+
+		count += 1
+
+		-- Make a blank board of the correct size
+		board = string.rep(TILE_STATES.none, (size*size)+1)
+
+		for i = 1, MAX_FILLS
+
+			-- Choose a random x and y
+			random_x = math.random(size)
+			random_y = math.random(size)
+
+			-- Place either a on or off there
+			if math.random() > 0.5
+				board = set_x_y(board, random_x, random_y, TILE_STATES.on)
+			else
+				board = set_x_y(board, random_x, random_y, TILE_STATES.off)
+
+			-- Check if the generated board is solveable
+			if solve(board)
+				-- If it is, return finished board
+				return format_grid(board), i
+			-- If not, back to the top of the loop to add another tile
+
+		-- Check that we've not gone over the maximum amount of attempts
+		if count > MAX_ATTEMPTS
+			return "Over max attempts, try changing input settings", count
+		elseif playdate.getSecondsSinceEpoch() > timeout
+			return "Over max time, try changing input settings", count

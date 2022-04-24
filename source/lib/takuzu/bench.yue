@@ -1,0 +1,29 @@
+-- require "generate"
+-- require "generators/random_place"
+
+sizes = {2, 8}
+difficulty_granularity = 0.1
+difficulty_count = 1/difficulty_granularity
+samples = 5
+csv = "Sample, Size, Difficulty, Attempts taken to generate, Time taken\n"
+
+file = io.open("rewind.csv", "a+")
+file\write(csv)
+
+for sample = 1, samples
+	for size = sizes[1], sizes[2]
+
+		-- If even size
+		if size % 2 == 0
+
+			for difficulty = 0, difficulty_count
+
+				difficulty = difficulty/difficulty_count
+				start = playdate.getSecondsSinceEpoch()
+				_, attempts = generate_random_place(difficulty, size)
+				timer = playdate.getSecondsSinceEpoch() - start
+				csv = sample .. "," .. size .. "," .. difficulty .. "," .. attempts .. "," .. timer .."\n"
+				print csv
+				file\write(csv)
+
+file\close()
