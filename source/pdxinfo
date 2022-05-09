@@ -1,5 +1,5 @@
-name=YourGame
-author=YourName
+name=Bindoku
+author=Allie Law
 description=YourDescription
-bundleID=com.github.YourUsername.YourGame
+bundleID=com.github.childishgiant.bindoku
 version=0.0.1

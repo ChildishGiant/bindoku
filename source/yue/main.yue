@@ -1,26 +1,94 @@
--- Copyright 2022 YourName <YourEmail>
+-- Copyright 2022 Allie Law <allie@cloverleaf.app>
 -- SPDX-License-Identifier: GPL-3.0-or-later
 
+require "CoreLibs/utilities/where"
+require "CoreLibs/object"
+require "CoreLibs/graphics"
+require "CoreLibs/sprites"
+require "CoreLibs/timer"
+require "CoreLibs/crank"
+
 global gfx = playdate.graphics
-global takuzu = require("lib/takuzu/full")
-Tile = require("tile")
+global bindoku = require("lib/bindoku/full")
+
+-- global sizes = {
+-- 	"4": {
+-- 		x_offset: 83,
+-- 		y_offset: 1,
+-- 		size: 56,
+-- 		gap: 3,
+--     selected: 16, -- Number of pixels to add when selected
+
+--     fill_width: 50,
+--     width: 2
+-- 	}
+-- }
+
+global sizes = {
+	"4": {
+		x_offset: 83,
+		y_offset: 8,
+		size: 52,
+		gap: 2, -- Gap between tiles
+    selected: 16, -- Number of pixels to add when selected
+
+    width: 2 -- Outline width
+    -- fill_width: size-((width+1)*2),
+	}
+}
+sizes["4"].fill_width = sizes["4"].size - ((sizes["4"].width+1)*2)
+
+global selected_x = 1
+global selected_y = 1
+
+global Tile = require("tile")
+util = require("util")
 
 playdate.display.setInverted(true)
 
+puzzle = bindoku.generate_rewind(4,4)
+print "\n"..puzzle
 
+global board_size = "4"
 
-puzzle = takuzu.generate_rewind(4,4)
-print puzzle
-row_cols = board_string_to_arrays(puzzle)
+global none_image, half_image, full_image = util.generate_images(board_size)
+global none_selected, half_selected, full_selected = util.generate_images(board_size, true)
 
-
-for row = 1, #row_cols
-  for col = 1, #row_cols[row]
-
-    new_tile = Tile!
-    new_tile\set_state(row_cols[row][col])
-    new_tile.sprite\moveTo(83 + (row-1)*56 + ((row-1)* 4), (col-1)*56 + ((col-1)* 4))
+board = util.load_board(puzzle)
 
 playdate.update = () ->
   gfx.sprite.update!
+  -- gfx.setLineWidth(1)
+  -- gfx.drawLine(1,120,400,120)
 
+playdate.downButtonDown = () ->
+  if selected_y < tonumber(board_size)
+    board[selected_x][selected_y]\set_selected(false)
+    selected_y = selected_y + 1
+    board[selected_x][selected_y]\set_selected(true)
+
+playdate.upButtonDown = () ->
+  if selected_y > 1
+    board[selected_x][selected_y]\set_selected(false)
+    selected_y = selected_y - 1
+    board[selected_x][selected_y]\set_selected(true)
+
+playdate.leftButtonDown = () ->
+  if selected_x > 1
+    board[selected_x][selected_y]\set_selected(false)
+    selected_x = selected_x - 1
+    board[selected_x][selected_y]\set_selected(true)
+
+playdate.rightButtonDown = () ->
+  if selected_x < tonumber(board_size)
+    board[selected_x][selected_y]\set_selected(false)
+    selected_x = selected_x + 1
+    board[selected_x][selected_y]\set_selected(true)
+
+playdate.AButtonDown = () ->
+  if board[selected_x][selected_y].editable
+    -- Can edit tile
+    print("editable")
+  else
+    -- Can't edit tile
+    print("not editable")

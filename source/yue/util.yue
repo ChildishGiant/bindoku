@@ -1,0 +1,79 @@
+background = (size, bonus) ->
+	gfx.setColor(1)
+	gfx.fillRoundRect(3, 3, size+bonus-2, size+bonus-2, 10)
+
+-- How many tiles on the board, width of stroke
+generate_images = (board_size, selected = false) ->
+
+	selected_bonus = 0
+	selected_bonus = sizes[board_size].selected if selected
+
+	fill_width = sizes[board_size].fill_width
+	fill_width += selected_bonus -- If selected, the interior also increases
+
+	width = sizes[board_size].width
+	width = 2 if width == nil
+	gfx.setLineWidth(width)
+
+	size = sizes[board_size].size
+
+	none_image = gfx.image.new(size+width+1+selected_bonus, size+width+1+selected_bonus)
+	gfx.pushContext(none_image)
+	gfx.drawRoundRect(width, width, size+selected_bonus, size+selected_bonus, 10)
+	-- Background so the sprite isn't transparent
+	background(size, selected_bonus)
+	gfx.popContext()
+
+
+	half_image = gfx.image.new(size+width+1+selected_bonus, size+width+1+selected_bonus)
+	gfx.pushContext(half_image)
+	gfx.drawRoundRect(width, width, size+selected_bonus, size+selected_bonus, 10)
+	-- Background so the sprite isn't transparent
+	background(size, selected_bonus)
+	-- Draw half tone
+	gfx.setPattern({0x77, 0x77, 0xDD, 0xDD, 0x77, 0x77, 0xDD, 0xDD})
+	gfx.fillRoundRect(5, 5, fill_width, fill_width, 6)
+	gfx.popContext()
+	gfx.setColor(0) -- Reset colour
+
+
+	full_image = gfx.image.new(size+width+1+selected_bonus, size+width+1+selected_bonus)
+	gfx.pushContext(full_image)
+	gfx.drawRoundRect(width, width, size+selected_bonus, size+selected_bonus, 10)
+	-- Background so the sprite isn't transparent
+	background(size, selected_bonus)
+	-- Draw filled
+	gfx.setColor(0)
+	gfx.fillRoundRect(5, 5, fill_width, fill_width, 6)
+	gfx.popContext()
+
+	return none_image, half_image, full_image
+
+load_board = (puzzle) ->
+
+	row_cols = board_string_to_arrays(puzzle)
+	board = {}
+
+	for row = 1, #row_cols
+
+		board[row] = {}
+
+		for col = 1, #row_cols[row]
+
+			new_tile = Tile!
+			new_tile\set_state(row_cols[col][row], true)
+			new_tile.sprite\moveTo(
+				sizes[board_size].x_offset + (row-1) * sizes[board_size].size + ((row-1) *  (sizes[board_size].gap + sizes[board_size].width)),
+				sizes[board_size].y_offset + (col-1) * sizes[board_size].size + ((col-1) *  (sizes[board_size].gap + sizes[board_size].width))
+			)
+
+			board[row][col] = new_tile
+
+	board[1][1]\set_selected(true)
+
+	return board
+
+return {
+	:generate_images
+	:load_board
+}
