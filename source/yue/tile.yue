@@ -4,7 +4,6 @@ size = 56
 
 class Tile
 
-
 	new: =>
 		@sprite = gfx.sprite.new(half_image)
 		-- @sprite\moveTo(1, 10)
@@ -14,12 +13,7 @@ class Tile
 		@selected = false
 		@editable = true
 
-		print @sprite\getZIndex()
-
 	set_state: (state, readonly=false) =>
-
-		print selected_x, selected_y
-		print @selected
 
 		@state = state
 
@@ -38,7 +32,6 @@ class Tile
 				image = full_selected if @selected
 
 				@editable = false if readonly
-
 
 		if image != nil
 			@sprite\setImage(image)

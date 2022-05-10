@@ -126,7 +126,7 @@ cycle_x_y = (board, x, y) ->
 
   replace = TILE_STATES[CYCLE_ORDER[tostring(index)]]
 
-  return set_x_y(board, x, y, replace)
+  return set_x_y(board, x, y, replace), replace
 
 
 global board_string_to_arrays = (board) ->

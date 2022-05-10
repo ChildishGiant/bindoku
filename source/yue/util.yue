@@ -73,7 +73,37 @@ load_board = (puzzle) ->
 
 	return board
 
+clean_board = (board) ->
+
+	for row = 1, #board
+		for col = 1, #board[row]
+			board[row][col].sprite\remove!
+
+	selected_x, selected_y = 1, 1
+	board = {}
+
+shake = (intensity, length) ->
+
+	timer = playdate.frameTimer.new(length, 0, intensity)
+	timer.reverses = true
+	timer.updateCallback = (timer) ->
+		x_direction = math.random!
+		y_direction = math.random!
+
+		playdate.display.setOffset(timer.value * x_direction, timer.value * y_direction)
+
+	-- timer.timerEndedCallback = () ->
+	-- 	print "Finished shake"
+
+	-- print "Started shaking for " .. length .. " frames with " .. intensity .. " strength"
+
+-- sash = (text, length) ->
+
+
+
 return {
 	:generate_images
 	:load_board
+	:shake
+	:clean_board
 }

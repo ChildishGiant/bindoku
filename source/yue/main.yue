@@ -7,6 +7,7 @@ require "CoreLibs/graphics"
 require "CoreLibs/sprites"
 require "CoreLibs/timer"
 require "CoreLibs/crank"
+require "CoreLibs/frameTimer"
 
 global gfx = playdate.graphics
 global bindoku = require("lib/bindoku/full")
@@ -56,8 +57,22 @@ global none_selected, half_selected, full_selected = util.generate_images(board_
 
 board = util.load_board(puzzle)
 
+check_solved = () ->
+
+  -- If solved
+  if bindoku.check_solved(puzzle)
+    print "solved!"
+    -- playdate.display.setInverted(false)
+    puzzle = bindoku.generate_rewind(4,4)
+    print selected_x, selected_y
+    util.clean_board(board)
+    board = util.load_board(puzzle)
+    print selected_x, selected_y
+
+
 playdate.update = () ->
   gfx.sprite.update!
+  playdate.frameTimer.updateTimers!
   -- gfx.setLineWidth(1)
   -- gfx.drawLine(1,120,400,120)
 
@@ -88,7 +103,14 @@ playdate.rightButtonDown = () ->
 playdate.AButtonDown = () ->
   if board[selected_x][selected_y].editable
     -- Can edit tile
-    print("editable")
+    -- Cycle through the tiles
+    puzzle, new_state = bindoku.cycle_x_y(puzzle, selected_x, selected_y)
+    board[selected_x][selected_y]\set_state(new_state)
+    check_solved!
+
   else
     -- Can't edit tile
-    print("not editable")
+    util.shake(10, 5)
+
+-- playdate.cranked = (change, accelerated_change) ->
+--   print change, accelerated_change
